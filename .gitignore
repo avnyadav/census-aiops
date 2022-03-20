@@ -1,0 +1,14 @@
+airflow/logs/*
+airflow/airflow.cfg
+airflow/airflow.db
+airflow-webserver.pid
+airflow_config.py
+census_consumer_complaint_data/*
+venv/
+census_consumer_complaint.*
+zip_to_csv/*
+census_consumer_complaint_notebook/*
+
+
+
+

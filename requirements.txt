@@ -1,0 +1,4 @@
+tfx==1.6.1
+jupyterlab
+apache-beam[interactive]
+apache-airflow
