@@ -6,5 +6,6 @@ setup(
     version="0.0.1",
     description="Local packaging of library",
     author="Avnish Yadav",
-    packages=find_packages()
+    packages=find_packages(),
+    install_requires=['tfx==1.6.1','apache-beam[interactive]','apache-airflow','-e .']
 )
