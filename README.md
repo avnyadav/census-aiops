@@ -42,4 +42,8 @@ pip install \
   --global-option="-L/usr/local/lib"
 ```
 
-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
+pip install twine
+python setup.py sdist bdist_wheel
+twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+twine upload dist/*
+

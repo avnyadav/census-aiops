@@ -36,7 +36,7 @@ def get_model_evaluation_component(data_ingestion: DataIngestion, trainer: Model
             examples=data_ingestion.zip_example_gen.outputs['examples'],
             model=trainer.trainer.outputs['model'],
             eval_config=eval_config,
-            # baseline_model=model_resolver.outputs['model'],
+            baseline_model=model_resolver.outputs['model'],
 
         )
         return ModelEvaluation(resolver=model_resolver, evaluator=evaluator)
