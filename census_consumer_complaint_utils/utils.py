@@ -147,7 +147,7 @@ def parse_file(element, columns):
 
 
 ## code added by Avnish327030
-def download_datatset(zip_file_uri: str, download_dir: str) -> str:
+def download_dataset(zip_file_uri: str, download_dir: str) -> str:
     """Downloads a dataset from a given uri and saves it to a Download directory.
 
   Args:

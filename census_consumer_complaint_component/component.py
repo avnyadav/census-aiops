@@ -6,6 +6,7 @@ from census_consumer_complaint_component.data_preprocessing import get_data_prep
 from census_consumer_complaint_exception.exception import CensusConsumerException
 from census_consumer_complaint_component.model_trainer import get_model_trainer_component
 from census_consumer_complaint_component.model_evaluation import get_model_evaluation_component
+from census_consumer_complaint_component.model_pusher import get_model_pusher_component
 
 
 def get_census_consumer_complaint_pipeline_component():
@@ -35,10 +36,15 @@ def get_census_consumer_complaint_pipeline_component():
         # returning pipeline component
         pipeline_component.append(model_trainer.trainer)
 
-        # model_analysis = get_model_evaluation_component(data_ingestion=data_ingestion,
-        #                                                 trainer=model_trainer)
+        model_analysis = get_model_evaluation_component(data_ingestion=data_ingestion,
+                                                        trainer=model_trainer)
 
-        #pipeline_component.append(model_analysis.evaluator)
+        pipeline_component.append(model_analysis.resolver)
+        pipeline_component.append(model_analysis.evaluator)
+
+        model_pusher = get_model_pusher_component(trainer=model_trainer, evaluator=model_analysis)
+        pipeline_component.append(model_pusher.pusher)
+
         return pipeline_component
 
     except Exception as e:

@@ -8,7 +8,7 @@ venv/
 census_consumer_complaint.*
 zip_to_csv/*
 census_consumer_complaint_notebook/*
-
+airflow/*
 
 
 

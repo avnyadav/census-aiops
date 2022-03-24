@@ -11,7 +11,7 @@ LOG_DIR = 'logs'
 SERVING_MODEL_DIR = "saved_models"
 DAYS = 1  # scheduled interval day
 SCHEDULED_INTERVAL = datetime.timedelta(days=DAYS)
-START_DATE = datetime.datetime(2022, 3, 20)
+START_DATE = datetime.datetime(2022, 3, 22)
 TRANSFORM_MODULE_FILE = os.path.join(WORK_DIR, "census_consumer_complaint_component", "feature_engineering",
                                      "feature_engineering.py")
 TRAINER_MODULE_FILE = os.path.join(WORK_DIR, "census_consumer_complaint_component", "model_training",

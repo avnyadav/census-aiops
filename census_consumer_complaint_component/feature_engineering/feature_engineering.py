@@ -75,8 +75,6 @@ def convert_zip_code(zip_code):
             zip_code = "00000"
         zip_code = tf.strings.regex_replace(zip_code, r'X{0,5}', "0")
         zip_code = tf.strings.to_number(zip_code, tf.float32)
-        # zip_code = tf.cast(zip_code,dtype=tf.float64)
-        print(zip_code)
         return zip_code
     except Exception as e:
         print(e)
@@ -95,12 +93,12 @@ def preprocessing_fn(inputs):
 
         # for key, bucket_count in BUCKET_FEATURES.items():
         #     temp_feature = tft.bucketize(
-        # tft.bucketize(convert_zip_code(fill_in_missing(inputs[key])),
-        #              num_buckets=5,
-        #             )#, num_buckets=10
+        #         tft.bucketize(convert_zip_code(fill_in_missing(inputs[key])),
+        #                       num_buckets=5,
+        #                       )  # , num_buckets=10
         #     )
 
-        #     outputs[transformed_name(key)] = convert_num_to_one_hot(temp_feature, num_labels=bucket_count + 1)
+        # outputs[transformed_name(key)] = convert_num_to_one_hot(temp_feature, num_labels=bucket_count + 1)
 
         for key in TEXT_FEATURES.keys():
             outputs[transformed_name(key)] = fill_in_missing(inputs[key])

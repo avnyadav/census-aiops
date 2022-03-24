@@ -19,7 +19,7 @@ from typing import Any, Dict, Union
 from absl import logging
 import apache_beam as beam
 import tensorflow as tf
-from census_consumer_complaint_utils.utils import download_datatset, extract_zip_file, transform_csv_to_tf_record_file
+from census_consumer_complaint_utils.utils import download_dataset, extract_zip_file, transform_csv_to_tf_record_file
 from tfx.components.example_gen import base_example_gen_executor
 from tfx.proto import example_gen_pb2
 from tfx.types import standard_component_specs
@@ -88,7 +88,7 @@ class Executor(base_example_gen_executor.BaseExampleGenExecutor):
             zip_file_uri = exec_properties[REMOTE_ZIP_FILE_URI_KEY]
 
             # downloading zip file from zip file uri into input_base_uri location
-            zip_file_path = download_datatset(zip_file_uri, input_base_uri)
+            zip_file_path = download_dataset(zip_file_uri, input_base_uri)
             extract_zip_file(zip_file_path, input_base_uri)
             os.remove(zip_file_path)
             transform_csv_to_tf_record_file(csv_file_dir=input_base_uri, tf_record_file_dir=input_base_uri)

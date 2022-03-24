@@ -21,64 +21,13 @@ import pandas as pd
 from absl import logging
 import apache_beam as beam
 import tensorflow as tf
-from census_consumer_complaint_utils.utils import transform_csv_to_tf_record_file, download_datatset, extract_zip_file, \
-    parse_file
-from tfx.components.example_gen import utils
+from census_consumer_complaint_utils.utils import  download_dataset, extract_zip_file
+
 from tfx.components.example_gen.base_example_gen_executor import BaseExampleGenExecutor
 from tfx.types import standard_component_specs
 from census_consumer_complaint_types.types import REMOTE_ZIP_FILE_URI_KEY
-from tfx.utils import io_utils
-from tfx_bsl.coders import csv_decoder
+
 import pandas as pd
-from pandas_tfrecords.to_tfrecords import to_tfrecords
-from pandas_tfrecords import pd2tf
-from tfx.components.example_gen.import_example_gen.executor import _ImportSerializedRecord
-
-from tfx.proto import example_gen_pb2
-
-
-@beam.ptransform_fn
-@beam.typehints.with_input_types(beam.Pipeline)
-@beam.typehints.with_output_types(Union[tf.train.Example,
-                                        tf.train.SequenceExample, bytes])
-def ImportRecord(pipeline: beam.Pipeline, exec_properties: Dict[str, Any],
-                 split_pattern: str) -> beam.pvalue.PCollection:
-    """PTransform to import records.
-
-  The records are tf.train.Example, tf.train.SequenceExample,
-  or serialized proto.
-
-  Args:
-    pipeline: Beam pipeline.
-    exec_properties: A dict of execution properties.
-      - input_base: input dir that contains input data.
-    split_pattern: Split.pattern in Input config, glob relative file pattern
-      that maps to input files with root directory given by input_base.
-
-  Returns:
-    PCollection of records (tf.Example, tf.SequenceExample, or bytes).
-  """
-    output_payload_format = exec_properties.get(
-        standard_component_specs.OUTPUT_DATA_FORMAT_KEY)
-
-    serialized_records = (
-            pipeline
-            # pylint: disable=no-value-for-parameter
-            | _ImportSerializedRecord(exec_properties, split_pattern))
-    if output_payload_format == example_gen_pb2.PayloadFormat.FORMAT_PROTO:
-        return serialized_records
-    elif (output_payload_format ==
-          example_gen_pb2.PayloadFormat.FORMAT_TF_EXAMPLE):
-        return (serialized_records
-                | 'ToTFExample' >> beam.Map(tf.train.Example.FromString))
-    elif (output_payload_format ==
-          example_gen_pb2.PayloadFormat.FORMAT_TF_SEQUENCE_EXAMPLE):
-        return (serialized_records
-                | 'ToTFSequenceExample' >> beam.Map(
-                    tf.train.SequenceExample.FromString))
-
-    raise ValueError('output_payload_format must be one of FORMAT_TF_EXAMPLE,'
-                     ' FORMAT_TF_SEQUENCE_EXAMPLE or FORMAT_PROTO')
 
 
 @beam.ptransform_fn
@@ -109,21 +58,21 @@ def _ZipToExample(  # pylint: disable=invalid-name
     zip_file_uri = exec_properties[REMOTE_ZIP_FILE_URI_KEY]
 
     # downloading zip file from zip file uri into input_base_uri location
-    zip_file_path = download_datatset(zip_file_uri, input_base_uri)
+    zip_file_path = download_dataset(zip_file_uri, input_base_uri)
     extract_zip_file(zip_file_path, input_base_uri)
     os.remove(zip_file_path)
 
     for file in os.listdir(input_base_uri):
         csv_file_path = os.path.join(input_base_uri, file)
-        df = pd.read_csv(csv_file_path, chunksize=200000)
+        df = pd.read_csv(csv_file_path, chunksize=1000000)
         file_number = 1
         for data_set in df:
             data_set.dropna(inplace=True, subset=['Consumer disputed?'],axis=0)
             data_set['Consumer disputed?'] = data_set['Consumer disputed?'].replace({'Yes': 1.0, 'No': 0.0})
             data_set.to_csv(os.path.join(input_base_uri, f"file_{file_number}_{file}"), index=None, header=True)
             file_number += 1
-            print(data_set.head())
-            break
+
+            #print(data_set.head())
         os.remove(csv_file_path)
 
     # extracting zip file and deleteing zip file from directory
