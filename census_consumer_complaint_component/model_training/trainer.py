@@ -24,54 +24,107 @@ def _build_keras_model(tf_transform_output: TFTransformOutput) -> tf.keras.Model
 
         feature_spec.pop(transformed_name(LABEL_KEY))
 
-        inputs = {}
-
-        deep = None
-        for key, spec in feature_spec.items():
-            print(f"building model with column{key}")
-            if key in list(map(lambda x: transformed_name(x), TEXT_FEATURES.keys())):
-                continue
-                print(f"Skipping column{key}")
-                inputs[key] = tf.keras.Input(shape=(1,), name=transformed_name(key),
-                                             dtype=tf.string)
-                MODULE_URL = "https://tfhub.dev/google/universal-sentence-encoder/4"
-
-                embed = hub.KerasLayer(MODULE_URL)
-                reshaped_narrative = tf.reshape(inputs[key], [-1])
-                embed_narrative = embed(reshaped_narrative)
-                deef_ff = tf.keras.layers.Reshape((512,), input_shape=(1, 512))(embed_narrative)
-                deep = tf.keras.layers.Dense(256, activation="relu", )(deef_ff)
-                deep = tf.keras.layers.Dense(64, activation="relu")(deep)
-                deep = tf.keras.layers.Dense(16, activation="relu")(deep)
-                continue
-            if isinstance(spec, tf.io.VarLenFeature):
-                inputs[key] = tf.keras.layers.Input(
-                    shape=[None], name=key, dtype=spec.dtype, sparse=True
-                )
-            elif isinstance(spec, tf.io.FixedLenFeature):
-                inputs[key] = tf.keras.layers.Input(
-                    shape=spec.shape or [1], name=key, dtype=spec.dtype, )
-            else:
-                raise ValueError('Spec type is not supported:', key, spec)
-
-        wide_ff = tf.keras.layers.concatenate([inputs[column] for column in filter(
-            lambda x: x not in transformed_name('Consumer complaint narrative'), feature_spec.keys())])
-
-        wide = tf.keras.layers.Dense(16, activation="relu")(wide_ff)
-
-        #both = tf.keras.layers.concatenate([deep, wide])
-        output = tf.keras.layers.Dense(100, activation='relu')(wide)
-        output = tf.keras.layers.Dense(70, activation='relu')(output)
-        output = tf.keras.layers.Dense(50, activation='relu')(output)
-        output = tf.keras.layers.Dense(20, activation='relu')(output)
-        output = tf.keras.layers.Dense(1)(output)
-        # output = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
-        # output = tf.keras.layers.Dense(100, activation='relu')(output)
+        # inputs = {}
+        #
+        # deep = None
+        # for key, spec in feature_spec.items():
+        #     print(f"building model with column{key}")
+        #     if key in list(map(lambda x: transformed_name(x), TEXT_FEATURES.keys())):
+        #         continue
+        #         print(f"Skipping column{key}")
+        #         inputs[key] = tf.keras.Input(shape=(1,), name=transformed_name(key),
+        #                                      dtype=tf.string)
+        #         MODULE_URL = "https://tfhub.dev/google/universal-sentence-encoder/4"
+        #
+        #         embed = hub.KerasLayer(MODULE_URL)
+        #         reshaped_narrative = tf.reshape(inputs[key], [-1])
+        #         embed_narrative = embed(reshaped_narrative)
+        #         deef_ff = tf.keras.layers.Reshape((512,), input_shape=(1, 512))(embed_narrative)
+        #         deep = tf.keras.layers.Dense(256, activation="relu", )(deef_ff)
+        #         deep = tf.keras.layers.Dense(64, activation="relu")(deep)
+        #         deep = tf.keras.layers.Dense(16, activation="relu")(deep)
+        #         continue
+        #     if isinstance(spec, tf.io.VarLenFeature):
+        #         inputs[key] = tf.keras.layers.Input(
+        #             shape=[None], name=key, dtype=spec.dtype, sparse=True
+        #         )
+        #     elif isinstance(spec, tf.io.FixedLenFeature):
+        #         inputs[key] = tf.keras.layers.Input(
+        #             shape=spec.shape or [1], name=key, dtype=spec.dtype, )
+        #     else:
+        #         raise ValueError('Spec type is not supported:', key, spec)
+        #
+        # wide_ff = tf.keras.layers.concatenate([inputs[column] for column in filter(
+        #     lambda x: x not in transformed_name('Consumer complaint narrative'), feature_spec.keys())])
+        #
+        # wide = tf.keras.layers.Dense(16, activation="relu")(wide_ff)
+        #
+        # #both = tf.keras.layers.concatenate([deep, wide])
+        # output = tf.keras.layers.Dense(100, activation='relu')(wide)
         # output = tf.keras.layers.Dense(70, activation='relu')(output)
         # output = tf.keras.layers.Dense(50, activation='relu')(output)
         # output = tf.keras.layers.Dense(20, activation='relu')(output)
         # output = tf.keras.layers.Dense(1)(output)
-        return tf.keras.Model(inputs=inputs, outputs=output)
+        # # output = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
+        # # output = tf.keras.layers.Dense(100, activation='relu')(output)
+        # # output = tf.keras.layers.Dense(70, activation='relu')(output)
+        # # output = tf.keras.layers.Dense(50, activation='relu')(output)
+        # # output = tf.keras.layers.Dense(20, activation='relu')(output)
+        # # output = tf.keras.layers.Dense(1)(output)
+        # return tf.keras.Model(inputs=inputs, outputs=output)
+
+        input_features = []
+
+        for key, dim in ONE_HOT_FEATURES.items():
+            input_features.append(
+                tf.keras.Input(
+                    shape=(dim + 1,),
+                    name=transformed_name(key)
+                )
+            )
+        input_texts = []
+        for key in TEXT_FEATURES.keys():
+            input_texts.append(tf.keras.Input(shape=(1,),
+                                              name=transformed_name(key),
+                                              dtype=tf.string
+                                              ))
+
+        inputs = input_features + input_texts
+
+        MODULE_URL = "https://tfhub.dev/google/universal-sentence-encoder/4"
+
+        embed = hub.KerasLayer(MODULE_URL)
+        reshaped_narrative = tf.reshape(input_texts[0], [-1])
+        embed_narrative = embed(reshaped_narrative)
+
+        deep_feed_forward = tf.keras.layers.Reshape((512,), input_shape=(1, 512))(embed_narrative)
+
+        deep = tf.keras.layers.Dense(256, activation="relu")(deep_feed_forward)
+
+        deep = tf.keras.layers.Dense(64, activation="relu")(deep)
+
+        deep = tf.keras.layers.Dense(16, activation="relu")(deep)
+
+        wide_feed_forward = tf.keras.layers.concatenate(input_features)
+
+        wide = tf.keras.layers.Dense(16, activation="relu")(wide_feed_forward)
+
+        both = tf.keras.layers.concatenate([deep, wide])
+
+        output = tf.keras.layers.Dense(1, activation="sigmoid")(both)
+
+        keras_model = tf.keras.models.Model(inputs, output)
+
+        return keras_model
+
+
+
+
+
+
+
+
+
     except Exception as e:
         raise CensusConsumerException(e, sys) from e
 

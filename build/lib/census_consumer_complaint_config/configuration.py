@@ -1,8 +1,9 @@
 import os
 import datetime
+from census_consumer_complaint_component.feature_engineering import  feature_engineering
+from census_consumer_complaint_component.model_training import trainer
 
-WORK_DIR = os.getcwd()
-ROOT_DIR = os.path.join(WORK_DIR, "census_consumer_complaint_data")
+ROOT_DIR = os.path.join("census_consumer_complaint_data")
 PIPELINE_NAME = "census_consumer_complaint"
 PIPELINE_ARTIFACT = "artifact"
 META_DATA_SQLITE_FILE_DIR = "meta_data"
@@ -12,10 +13,12 @@ SERVING_MODEL_DIR = "saved_models"
 DAYS = 1  # scheduled interval day
 SCHEDULED_INTERVAL = datetime.timedelta(days=DAYS)
 START_DATE = datetime.datetime(2022, 3, 22)
-TRANSFORM_MODULE_FILE = os.path.join(WORK_DIR, "census_consumer_complaint_component", "feature_engineering",
-                                     "feature_engineering.py")
-TRAINER_MODULE_FILE = os.path.join(WORK_DIR, "census_consumer_complaint_component", "model_training",
-                                   "trainer.py")
+TRANSFORM_MODULE_FILE = feature_engineering.__file__
+    # os.path.join(WORK_DIR, "census_consumer_complaint_component", "feature_engineering",
+    #                                  "feature_engineering.py")
+TRAINER_MODULE_FILE = trainer.__file__
+    # os.path.join(WORK_DIR, "census_consumer_complaint_component", "model_training",
+    #                                "trainer.py")
 
 
 class CensusConsumerConfiguration:

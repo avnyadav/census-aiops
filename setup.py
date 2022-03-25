@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="census-consumer-complaint",
     license="MIT",
-    version="0.0.2",
+    version="0.0.4",
     description="Local packaging of library",
     author="Avnish Yadav",
     packages=find_packages(),

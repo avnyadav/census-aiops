@@ -2,8 +2,8 @@ import os
 import datetime
 from census_consumer_complaint_component.feature_engineering import  feature_engineering
 from census_consumer_complaint_component.model_training import trainer
-WORK_DIR = os.getcwd()
-ROOT_DIR = os.path.join(WORK_DIR, "census_consumer_complaint_data")
+
+ROOT_DIR = os.path.join("census_consumer_complaint_data")
 PIPELINE_NAME = "census_consumer_complaint"
 PIPELINE_ARTIFACT = "artifact"
 META_DATA_SQLITE_FILE_DIR = "meta_data"
