@@ -20,15 +20,16 @@ census_consumer_config = CensusConsumerConfiguration()
 def get_model_trainer_component(data_validation: DataValidation,
                                 data_preprocessing: DataPreprocessing):
     try:
-        trainer = Trainer(
-            module_file=census_consumer_config.trainer_module_file_path,
-            custom_executor_spec=executor_spec.ExecutorClassSpec(GenericExecutor),
-            transformed_examples=data_preprocessing.transformer.outputs['transformed_examples'],
-            transform_graph=data_preprocessing.transformer.outputs['transform_graph'],
-            schema=data_validation.schema_gen.outputs['schema'],
-            train_args=trainer_pb2.TrainArgs(num_steps=TRAINING_STEPS),
-            eval_args=trainer_pb2.EvalArgs(num_steps=EVALUATION_STEPS)
-        )
+
+        training_kwargs = {
+            "module_file": census_consumer_config.trainer_module_file_path,
+            "examples": data_preprocessing.transformer.outputs['transformed_examples'],
+            "schema": data_validation.schema_gen.outputs['schema'],
+            "transform_graph": data_preprocessing.transformer.outputs['transform_graph'],
+            "train_args": trainer_pb2.TrainArgs(num_steps=TRAINING_STEPS),
+            "eval_args": trainer_pb2.EvalArgs(num_steps=EVALUATION_STEPS),
+        }
+        trainer = Trainer(**training_kwargs)
         model_trainer = ModelTrainer(trainer=trainer,
                                      )
         return model_trainer

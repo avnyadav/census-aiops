@@ -13,7 +13,6 @@ config = CensusConsumerConfiguration()
 
 def get_model_pusher_component(trainer: ModelTrainer, evaluator: ModelEvaluation) -> ModelPusher:
     try:
-        print(f"save model dir:{config.serving_model_dir}")
         pusher = Pusher(
             model=trainer.trainer.outputs['model'],
             model_blessing=evaluator.evaluator.outputs['blessing'],
@@ -21,9 +20,10 @@ def get_model_pusher_component(trainer: ModelTrainer, evaluator: ModelEvaluation
                 filesystem=pusher_pb2.PushDestination.Filesystem(
                     base_directory=config.serving_model_dir
                 )
-            )
-
+            ),
         )
+        print(f"save model dir:{config.serving_model_dir}")
+
         model_pusher = ModelPusher(pusher=pusher)
         return model_pusher
 
