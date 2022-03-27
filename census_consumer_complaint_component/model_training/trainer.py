@@ -51,16 +51,17 @@ def get_model(show_summary=True):
     #
     # deep = tf.keras.layers.Dense(256, activation="relu")(deep_ff)
     # deep = tf.keras.layers.Dense(64, activation="relu")(deep)
-    #deep = tf.keras.layers.Dense(16, activation="relu")(deep)
+    # deep = tf.keras.layers.Dense(16, activation="relu")(deep)
 
     wide_ff = tf.keras.layers.concatenate(input_features)
     wide = tf.keras.layers.Dense(16, activation="relu")(wide_ff)
+    wide = tf.keras.layers.Dense(8, activation="relu")(wide)
 
-    #both = tf.keras.layers.concatenate([deep, wide])
+    # both = tf.keras.layers.concatenate([deep, wide])
 
     output = tf.keras.layers.Dense(1, activation="sigmoid")(wide)
 
-    inputs = input_features# + input_texts
+    inputs = input_features  # + input_texts
 
     keras_model = tf.keras.models.Model(inputs, output)
     keras_model.compile(

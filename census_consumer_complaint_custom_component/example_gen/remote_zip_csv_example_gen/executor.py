@@ -21,7 +21,7 @@ import pandas as pd
 from absl import logging
 import apache_beam as beam
 import tensorflow as tf
-from census_consumer_complaint_utils.utils import  download_dataset, extract_zip_file
+from census_consumer_complaint_utils.utils import download_dataset, extract_zip_file
 
 from tfx.components.example_gen.base_example_gen_executor import BaseExampleGenExecutor
 from tfx.types import standard_component_specs
@@ -64,29 +64,18 @@ def _ZipToExample(  # pylint: disable=invalid-name
 
     for file in os.listdir(input_base_uri):
         csv_file_path = os.path.join(input_base_uri, file)
-        df = pd.read_csv(csv_file_path, chunksize=1000000)
+        df = pd.read_csv(csv_file_path, chunksize=200000)
         file_number = 1
         for data_set in df:
-            data_set.dropna(inplace=True, subset=['Consumer disputed?'],axis=0)
+            data_set.dropna(inplace=True, subset=['Consumer disputed?'], axis=0)
             data_set['Consumer disputed?'] = data_set['Consumer disputed?'].replace({'Yes': 1.0, 'No': 0.0})
             data_set.to_csv(os.path.join(input_base_uri, f"file_{file_number}_{file}"), index=None, header=True)
             file_number += 1
+            break
 
-            #print(data_set.head())
         os.remove(csv_file_path)
 
-    # extracting zip file and deleteing zip file from directory
-
-    # transform_csv_to_tf_record_file(csv_file_dir=input_base_uri, tf_record_file_dir=input_base_uri)
-    # for file in os.listdir(input_base_uri):
-    #     csv_file_path = os.path.join(input_base_uri,file)
-    #     df=pd.read_csv(csv_file_path,low_memory=False)
-    #     #to_tfrecords(df,input_base_uri,compression_type='GZIP', compression_level=9, columns=None,)
-    #     df.dropna(inplace=True,axis=0)
-    #     pd2tf(df,input_base_uri,compression_type='GZIP', compression_level=9, columns=None,)
-    #     os.remove(csv_file_path)
     return _CsvToExample(exec_properties=exec_properties, split_pattern=split_pattern).expand(pipeline=pipeline)
-    # return ImportRecord(pipeline=pipeline, exec_properties=exec_properties, split_pattern=split_pattern)
 
 
 class Executor(BaseExampleGenExecutor):

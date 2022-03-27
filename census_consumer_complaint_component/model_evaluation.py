@@ -23,7 +23,7 @@ def get_model_evaluation_component(data_ingestion: DataIngestion, trainer: Model
                 tfma.ModelSpec(
                     signature_name="serving_default",
                     label_key=LABEL_KEY,
-                    # preprocessing_function_names=["transform_features"],
+
                 )
             ],
             slicing_specs=[tfma.SlicingSpec(), tfma.SlicingSpec(feature_keys=["product"])],
