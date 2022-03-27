@@ -64,7 +64,6 @@ saved_model_cli show --dir <dir_path> --tag_set <tag_name>
 ```
 Above command will show available model signatures
 
-
 Next: with tag_set and signature_def info, 
 we can inspect model input and output
 ```commandline
