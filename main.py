@@ -60,9 +60,9 @@ def get_serialized_examples(data: CensusComplaintRecord):
 
     return {"serialized_data": example.SerializeToString()}
 
-
 def get_rest_request(data=None, model_name="my_model"):
     url = f"{URL}/{model_name}:predict"
+    url="http://tf-serving-load-balancer-281291316.ap-south-1.elb.amazonaws.com/v1/models/saved_models:predict"
     headers = {"content-type": "application/json"}
     census_complaint_record = CensusComplaintRecord(
         data_received="2016-05-09",

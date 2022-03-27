@@ -107,9 +107,9 @@ sudo docker run -p 8500:8500 \
 
 ```
 sudo docker run -p 8500:8500 -p 8501:8501 \
--v  /home/avnish/census_consumer_project/census_consumer_complaint/census_consumer_complaint_data/saved_models:/models/my_model \
+-v  /home/avnish/census_consumer_project/census_consumer_complaint/census_consumer_complaint_data/saved_models:/avnish/my_model \
 -e MODEL_NAME=my_model \
--e MODEL_BASE_PATH=/models \
+-e MODEL_BASE_PATH=/avnish \
 -t tensorflow/serving:latest
 ```
 
