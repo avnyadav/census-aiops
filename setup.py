@@ -5,7 +5,7 @@ setup(
     license="MIT",
     version="0.0.7",
     description="Project has been completed.",
-    author="Avnish Yadav",
+    author="Deepranjan",
     packages=find_packages(),
     install_requires=['tfx==1.6.1', 'apache-beam[interactive]', 'apache-airflow']
 )

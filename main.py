@@ -2,9 +2,9 @@ import base64
 import tensorflow_serving
 import requests
 import json
-from census_consumer_complaint_utils.utils import _bytes_feature, _float_feature, _int64_feature
+from census_consumer_complaint.utils.utils import _bytes_feature, _float_feature, _int64_feature
 import tensorflow as tf
-from census_consumer_complaint_component.feature_engineering.feature_engineering import TEXT_FEATURES
+from census_consumer_complaint.component.feature_engineering.feature_engineering import TEXT_FEATURES
 
 HOST = "localhost"
 PORT = "8501"
@@ -62,7 +62,7 @@ def get_serialized_examples(data: CensusComplaintRecord):
 
 def get_rest_request(data=None, model_name="my_model"):
     url = f"{URL}/{model_name}:predict"
-    url="http://tf-serving-load-balancer-281291316.ap-south-1.elb.amazonaws.com/v1/models/saved_models:predict"
+    #url="http://tf-serving-load-balancer-281291316.ap-south-1.elb.amazonaws.com/v1/models/saved_models:predict"
     headers = {"content-type": "application/json"}
     census_complaint_record = CensusComplaintRecord(
         data_received="2016-05-09",
