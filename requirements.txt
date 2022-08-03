@@ -1,4 +1,4 @@
-tfx==1.6.1
+tfx
 apache-beam[interactive]
 apache-airflow
 -e .
