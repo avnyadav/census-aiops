@@ -24,7 +24,7 @@ REMOVE_PACKAGE = "-e ."
 setup(
     name="census-consumer-complaint",
     license="MIT",
-    version="0.0.9",
+    version="0.1.0",
     description="Project has been completed.",
     # packages=find_packages(),
     # install_requires=['tfx==1.6.1', 'apache-beam[interactive]', 'apache-airflow']
@@ -32,7 +32,7 @@ setup(
     packages=find_packages(),
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=['tfx==1.6.1', 'apache-beam[interactive]', 'apache-airflow']
+    install_requires=['tfx', 'apache-beam[interactive]', 'apache-airflow']
 )
 
 
